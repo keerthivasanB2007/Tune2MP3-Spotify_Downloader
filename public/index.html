@@ -3,15 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Spotify Playlist Importer</title>
+    <title>Tune2MP3 - Spotify_Downloader</title>
     <link rel="stylesheet" href="style.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
     <div class="container">
         <header>
-            <h1>Spotify Playlist Importer</h1>
-            <p>Enter a public Spotify playlist URL to load its metadata and tracks.</p>
+            <h1>Tune2MP3 - Spotify_Downloader</h1>
+            <p>Paste your Spotify playlist URL and turn your tracks into MP3 files.</p>
         </header>
 
         <section class="importer-section">
@@ -27,6 +27,18 @@
                     <button type="submit" id="submit-btn">Load Playlist</button>
                 </div>
             </form>
+        </section>
+
+        <!-- How to Use Section (Visible Initially) -->
+        <section id="how-to-use" class="how-to-use">
+            <h2>How to use Tune2MP3</h2>
+            <ol>
+                <li><strong>Step 1 &mdash; Copy your Spotify playlist link:</strong> Copy the URL of a public Spotify playlist.</li>
+                <li><strong>Step 2 &mdash; Paste the link:</strong> Paste the Spotify playlist URL into the input above.</li>
+                <li><strong>Step 3 &mdash; Load your playlist:</strong> Click "Load Playlist" to retrieve the playlist tracks.</li>
+                <li><strong>Step 4 &mdash; Find the YouTube match:</strong> Tune2MP3 searches YouTube for the best matching video for each track.</li>
+                <li><strong>Step 5 &mdash; Download:</strong> Download individual tracks using "Download MP3" or download the available tracks together using "Download All".</li>
+            </ol>
         </section>
 
         <div id="loading" class="hidden">
@@ -67,7 +79,6 @@
                         <progress id="current-track-progress" value="0" max="100" style="flex:1; height: 18px;"></progress>
                         <span id="current-track-pct" style="margin-left: 8px; font-weight: bold;">0%</span>
                     </div>
-                    </div>
                     <div style="text-align: center; margin-top: 15px;">
                         <button id="cancel-bulk-btn" class="secondary-btn" style="background: #d32f2f;">Cancel Bulk Download</button>
                     </div>
@@ -81,6 +92,19 @@
             </div>
         </div>
     </div>
+
+    <footer class="site-footer">
+        <div class="footer-content">
+            <h3>Tune2MP3 - Spotify_Downloader</h3>
+            <p>Simple Spotify playlist to MP3 workflow.</p>
+            <div class="contact-links">
+                Email: <a href="mailto:keerthivasan762007@gamil.com">keerthivasan762007@gamil.com</a>
+                <span class="separator">|</span>
+                LinkedIn: <a href="https://www.linkedin.com/in/keerthivasan-b-1a0b67324/" target="_blank" rel="noopener noreferrer">Keerthivasan B</a>
+            </div>
+            <p class="copyright">&copy; 2026 Tune2MP3 - Spotify_Downloader. All rights reserved.</p>
+        </div>
+    </footer>
 
     <script src="app.js"></script>
 </body>

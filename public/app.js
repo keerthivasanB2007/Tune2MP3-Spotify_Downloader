@@ -156,6 +156,7 @@ document.addEventListener('DOMContentLoaded', () => {
                             ${escapeHtml(track.artistText)} &bull; ${escapeHtml(track.album)}
                         </div>
                     </div>
+                    <div class="track-actions"></div>
                 </li>
             `;
         }).join('');
@@ -190,28 +191,29 @@ document.addEventListener('DOMContentLoaded', () => {
                         const li = document.getElementById(`track-item-${globalIdx}`);
                         if (!li) return;
                         
-                        const infoDiv = li.querySelector('.track-info');
-                        if (!infoDiv) return;
+                        const actionsDiv = li.querySelector('.track-actions');
+                        if (!actionsDiv) return;
 
-                        if (infoDiv.querySelector('.youtube-result')) return;
+                        if (actionsDiv.querySelector('.youtube-play-btn') || actionsDiv.querySelector('.error')) return;
 
                         // CRITICAL FIX: Assign the result back to the global tracker!
                         currentTracks[globalIdx].youtube = result.youtube || null;
 
-                        const ytDiv = document.createElement('div');
                         if (result.youtube) {
                             // As soon as one positive youtube result hits, unhide the container
                             bulkDownloadContainer.classList.remove('hidden');
 
-                            ytDiv.className = 'youtube-result';
-                            ytDiv.innerHTML = `&#9658; YouTube: <a href="${escapeHtml(result.youtube.url)}" target="_blank">${escapeHtml(result.youtube.title)}</a> 
-                            <button class="download-mp3-btn secondary-btn" style="margin-left: 15px; font-size: 0.75em; padding: 0.25rem 0.75rem;" data-url="${escapeHtml(result.youtube.url)}">Download MP3</button>
-                            <div class="bulk-status-msg" style="font-size: 0.85em; font-weight: bold; margin-top: 5px;"></div>`;
+                            actionsDiv.innerHTML = `
+                                <a href="${escapeHtml(result.youtube.url)}" target="_blank" class="youtube-play-btn">&#9658; YouTube</a>
+                                <button class="download-mp3-btn" data-url="${escapeHtml(result.youtube.url)}">Download MP3</button>
+                                <div class="bulk-status-msg" style="width: 100%; text-align: right; font-size: 0.85em; font-weight: bold; flex-basis: 100%; margin-top: 5px;"></div>
+                            `;
                         } else {
-                            ytDiv.className = 'youtube-result error';
-                            ytDiv.innerHTML = `${result.error || 'No YouTube result found'} <div class="bulk-status-msg" style="font-size: 0.85em; font-weight: bold; margin-top: 5px;"></div>`;
+                            actionsDiv.innerHTML = `
+                                <div class="error" style="padding: 4px 8px; margin: 0; font-size: 0.85em; flex-basis: 100%;">${result.error || 'No YouTube result'}</div>
+                                <div class="bulk-status-msg" style="width: 100%; text-align: right; font-size: 0.85em; font-weight: bold; flex-basis: 100%; margin-top: 5px;"></div>
+                            `;
                         }
-                        infoDiv.appendChild(ytDiv);
                     });
                 }
             } catch (err) {
