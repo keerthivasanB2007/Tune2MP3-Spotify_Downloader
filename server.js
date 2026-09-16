@@ -167,7 +167,7 @@ app.get('/api/youtube/test-conversion', async (req, res) => {
     const mp3Path = path.join(tmpDir, `${videoId}.mp3`);
     
     // Exact args from convert-track
-    const ytdlpArgs = ['--ffmpeg-location', ffmpegExe, '--js-runtimes', 'deno', '--remote-components', 'ejs:npm', '-x', '--audio-format', 'mp3', '-o', outputPath, url];
+    const ytdlpArgs = ['--ffmpeg-location', ffmpegExe, '--js-runtimes', 'deno', '--remote-components', 'ejs:npm', '--extractor-args', 'youtube:player_client=android,web', '-x', '--audio-format', 'mp3', '-o', outputPath, url];
     
     let result = {
         command: ytDlpExe,
@@ -497,7 +497,7 @@ app.post('/api/youtube/convert-track', async (req, res) => {
         let stderrLog = "";
         
         // Use basic yt-dlp command. Add EJS components if needed for Render JS execution handling.
-        const ytdlpArgs = ['--ffmpeg-location', ffmpegExe, '--js-runtimes', 'deno', '--remote-components', 'ejs:npm', '-x', '--audio-format', 'mp3', '-o', outputPath, url];
+        const ytdlpArgs = ['--ffmpeg-location', ffmpegExe, '--js-runtimes', 'deno', '--remote-components', 'ejs:npm', '--extractor-args', 'youtube:player_client=android,web', '-x', '--audio-format', 'mp3', '-o', outputPath, url];
 
         console.log(`[CONVERT-TRACK] executable: ${ytDlpExe}`);
         console.log(`[CONVERT-TRACK] args: ${ytdlpArgs.join(' ')}`);
@@ -605,7 +605,7 @@ app.post('/api/youtube/convert', async (req, res) => {
 
     try {
         console.log(`[CONVERT] Fetching metadata for ${url}...`);
-        const { stdout: metadataStr } = await execPromise(`"${ytDlpExe}" --js-runtimes deno --remote-components ejs:npm -j "${url}"`);
+        const { stdout: metadataStr } = await execPromise(`"${ytDlpExe}" --js-runtimes deno --remote-components ejs:npm --extractor-args youtube:player_client=android,web -j "${url}"`);
         const metadata = JSON.parse(metadataStr);
         safeTitle = metadata.title.replace(/[^a-zA-Z0-9 ]/g, "").trim().substring(0, 50) || 'audio';
         if (metadata.id) videoId = metadata.id + '-' + Math.round(Math.random()*1e5);
@@ -620,7 +620,7 @@ app.post('/api/youtube/convert', async (req, res) => {
 
     console.log(`[CONVERT] Starting conversion to MP3 for ${safeTitle}...`);
     try {
-        await execPromise(`"${ytDlpExe}" --ffmpeg-location "${ffmpegExe}" --js-runtimes deno --remote-components ejs:npm -x --audio-format mp3 -o "${outputPath}" "${url}"`);
+        await execPromise(`"${ytDlpExe}" --ffmpeg-location "${ffmpegExe}" --js-runtimes deno --remote-components ejs:npm --extractor-args youtube:player_client=android,web -x --audio-format mp3 -o "${outputPath}" "${url}"`);
         
         if (!fs.existsSync(mp3Path)) {
             throw new Error(`File was not created at ${mp3Path}`);
