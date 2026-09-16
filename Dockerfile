@@ -8,6 +8,8 @@ RUN apt-get update && \
 
 # Install Deno (required by yt-dlp for JS execution on Render)
 RUN curl -fsSL https://deno.land/install.sh | DENO_INSTALL_ROOT=/usr/local sh
+RUN /usr/local/bin/deno --version
+ENV PATH="/usr/local/bin:${PATH}"
 
 # Install yt-dlp directly
 RUN curl -L https://github.com/yt-dlp/yt-dlp/releases/latest/download/yt-dlp -o /usr/local/bin/yt-dlp && \

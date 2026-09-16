@@ -91,7 +91,12 @@ isDenoAvailable = (denoExe !== 'deno' && fs.existsSync(denoExe)) || process.plat
 if (isYtDlpAvailable && isFfmpegAvailable) {
     console.log(`[INFO] yt-dlp resolved: ${ytDlpExe}`);
     console.log(`[INFO] FFmpeg resolved: ${ffmpegExe}`);
+    
+    let localDenoVer = 'unknown';
+    try { localDenoVer = require('child_process').execSync(`"${denoExe}" --version`, { stdio: 'pipe' }).toString().split('\n')[0].trim(); } catch(e){}
+    
     console.log(`[INFO] Deno resolved: ${isDenoAvailable ? denoExe : 'NOT FOUND'}`);
+    console.log(`[INFO] Deno version: ${localDenoVer}`);
 } else {
     console.warn(`[WARNING] Executable resolution failed.`);
 }
@@ -419,7 +424,7 @@ app.post('/api/youtube/convert-track', async (req, res) => {
         let stderrLog = "";
         
         // Use basic yt-dlp command. Add EJS components if needed for Render JS execution handling.
-        const ytdlpArgs = ['--ffmpeg-location', ffmpegExe, '--remote-components', 'ejs:npm', '-x', '--audio-format', 'mp3', '-o', outputPath, url];
+        const ytdlpArgs = ['--ffmpeg-location', ffmpegExe, '--js-runtimes', 'deno', '--remote-components', 'ejs:npm', '-x', '--audio-format', 'mp3', '-o', outputPath, url];
 
         const ytdlp = spawn(ytDlpExe, ytdlpArgs);
 
@@ -519,7 +524,7 @@ app.post('/api/youtube/convert', async (req, res) => {
 
     try {
         console.log(`[CONVERT] Fetching metadata for ${url}...`);
-        const { stdout: metadataStr } = await execPromise(`"${ytDlpExe}" --remote-components ejs:npm -j "${url}"`);
+        const { stdout: metadataStr } = await execPromise(`"${ytDlpExe}" --js-runtimes deno --remote-components ejs:npm -j "${url}"`);
         const metadata = JSON.parse(metadataStr);
         safeTitle = metadata.title.replace(/[^a-zA-Z0-9 ]/g, "").trim().substring(0, 50) || 'audio';
         if (metadata.id) videoId = metadata.id + '-' + Math.round(Math.random()*1e5);
@@ -534,7 +539,7 @@ app.post('/api/youtube/convert', async (req, res) => {
 
     console.log(`[CONVERT] Starting conversion to MP3 for ${safeTitle}...`);
     try {
-        await execPromise(`"${ytDlpExe}" --ffmpeg-location "${ffmpegExe}" --remote-components ejs:npm -x --audio-format mp3 -o "${outputPath}" "${url}"`);
+        await execPromise(`"${ytDlpExe}" --ffmpeg-location "${ffmpegExe}" --js-runtimes deno --remote-components ejs:npm -x --audio-format mp3 -o "${outputPath}" "${url}"`);
         
         if (!fs.existsSync(mp3Path)) {
             throw new Error(`File was not created at ${mp3Path}`);
