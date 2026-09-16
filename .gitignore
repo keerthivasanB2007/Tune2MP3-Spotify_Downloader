@@ -1,0 +1,14 @@
+node_modules/
+tmp/
+bulk_downloads/
+*.mp3
+
+boot_log.txt
+test_output.txt
+
+.env
+.env.*
+!.env.example
+
+.DS_Store
+Thumbs.db

@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Spotify Playlist Importer</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Spotify Playlist Importer</h1>
+            <p>Enter a public Spotify playlist URL to load its metadata and tracks.</p>
+        </header>
+
+        <section class="importer-section">
+            <form id="url-form">
+                <div class="input-group">
+                    <input 
+                        type="url" 
+                        id="playlist-url" 
+                        placeholder="Paste Spotify playlist URL" 
+                        required
+                        autocomplete="off"
+                    >
+                    <button type="submit" id="submit-btn">Load Playlist</button>
+                </div>
+            </form>
+        </section>
+
+        <div id="loading" class="hidden">
+            <div class="spinner"></div>
+            <p>Loading playlist...</p>
+        </div>
+
+        <div id="error-message" class="hidden error"></div>
+
+        <div id="results" class="hidden">
+            <div id="playlist-info" class="playlist-header">
+                <!-- Playlist information will be injected here -->
+            </div>
+            
+            <div id="extraction-stats" class="hidden stats-block">
+                <!-- Extraction stats will be injected here -->
+            </div>
+
+            <div id="limitation-warning" class="hidden warning-message">
+                Showing up to 100 tracks. This free extraction method currently has a 100-track limitation.
+            </div>
+
+            <div id="youtube-search-container" class="hidden" style="margin-bottom:1.5rem; text-align:center;">
+                <button id="search-youtube-btn" class="secondary-btn">Search YouTube Videos</button>
+                <div id="youtube-progress" class="hidden youtube-progress"></div>
+            </div>
+            
+            <div id="bulk-download-container" class="hidden" style="margin-bottom:1.5rem; text-align:center;">
+                <button id="download-all-btn" class="primary-btn" style="padding: 0.75rem 2rem; font-size: 1.1rem; font-weight: bold; background-color: #1DB954; color: white; border: none; border-radius: 8px; cursor: pointer;">Download All</button>
+                <div id="bulk-progress-ui" class="hidden bulk-progress" style="margin-top:15px; text-align: left; background: #fff; padding: 15px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); width: 300px; margin-left: auto; margin-right: auto; border: 1px solid #ddd;">
+                    <div style="margin-bottom: 8px; font-weight: bold; color: #333;" id="bulk-downloaded-count">Overall: 0/0</div>
+                    <div style="margin-bottom: 8px; font-weight: bold; color: #333;" id="bulk-remaining-count">Remaining: 0</div>
+                    
+                    <div id="current-track-name" style="margin-bottom: 8px; font-weight: 500; color: #1DB954;">Downloading: ...</div>
+                    
+                    <div style="display:flex; align-items:center; margin-bottom: 8px;">
+                        <span style="font-weight: 500; margin-right: 8px;">Current:</span>
+                        <progress id="current-track-progress" value="0" max="100" style="flex:1; height: 18px;"></progress>
+                        <span id="current-track-pct" style="margin-left: 8px; font-weight: bold;">0%</span>
+                    </div>
+                    </div>
+                    <div style="text-align: center; margin-top: 15px;">
+                        <button id="cancel-bulk-btn" class="secondary-btn" style="background: #d32f2f;">Cancel Bulk Download</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="tracks-container">
+                <ol id="tracks-list">
+                    <!-- Tracks will be injected here -->
+                </ol>
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>

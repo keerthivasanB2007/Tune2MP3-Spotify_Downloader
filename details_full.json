@@ -1,0 +1,365 @@
+{
+  "preview": {
+    "title": "Today’s Top Hits",
+    "type": "playlist",
+    "track": "BbY WOW",
+    "description": "Spotify",
+    "artist": "KAROL G, Judeline, rusowsky",
+    "image": "https://i.scdn.co/image/ab67706f00000002aeedf02d103abf921c9a1868",
+    "audio": "https://p.scdn.co/mp3-preview/f6ab45a8375c5bcf6f03161edd9f44c1fad501c8",
+    "link": "https://open.spotify.com/playlist/37i9dQZF1DXcBWIGoYBM5M",
+    "embed": "https://embed.spotify.com/?uri=spotify:playlist:37i9dQZF1DXcBWIGoYBM5M"
+  },
+  "tracks": [
+    {
+      "artist": "KAROL G, Judeline, rusowsky",
+      "duration": 225834,
+      "name": "BbY WOW",
+      "previewUrl": "https://p.scdn.co/mp3-preview/f6ab45a8375c5bcf6f03161edd9f44c1fad501c8",
+      "uri": "spotify:track:3h5T5JypYU7huFiVYhv1dr"
+    },
+    {
+      "artist": "Tame Impala",
+      "duration": 223069,
+      "name": "Loser",
+      "previewUrl": "https://p.scdn.co/mp3-preview/0015e9347a45b62215447eba657b2fc3ce279d2d",
+      "uri": "spotify:track:7bxaFZ1O3cHkgLKMsdC3xR"
+    },
+    {
+      "artist": "Ariana Grande",
+      "duration": 197949,
+      "name": "hate that i made you love me",
+      "previewUrl": "https://p.scdn.co/mp3-preview/9fb8e09c9facc2d9443b6e57ae36d47bf83c01b8",
+      "uri": "spotify:track:20jbSiX29FDX4oQxBXyUEi"
+    },
+    {
+      "artist": "Malcolm Todd",
+      "duration": 151500,
+      "name": "Earrings",
+      "previewUrl": "https://p.scdn.co/mp3-preview/20a1469df9f65a51878811bbe49979c418abc1b7",
+      "uri": "spotify:track:0eAuGrXyGFYwur9ARUe7LJ"
+    },
+    {
+      "artist": "Miley Cyrus",
+      "duration": 202460,
+      "name": "Bass Persuades",
+      "previewUrl": "https://p.scdn.co/mp3-preview/e57b7c5fcb52b8bb4c781cc1e2e5b25f8a6c6e79",
+      "uri": "spotify:track:2FZcjBYK4dTt48q94pJbJD"
+    },
+    {
+      "artist": "ADÉLA",
+      "duration": 184927,
+      "name": "Ain't In LA",
+      "previewUrl": "https://p.scdn.co/mp3-preview/a3d0119e3182fbb19636c2a44737fa3e0b71f939",
+      "uri": "spotify:track:02HyFYmpzt02VJ8k0CqxKj"
+    },
+    {
+      "artist": "Olivia Rodrigo",
+      "duration": 209680,
+      "name": "stupid song",
+      "previewUrl": "https://p.scdn.co/mp3-preview/894b272aa0422aeebe856825b55e5c736a9bc5ee",
+      "uri": "spotify:track:4LfCY65LvojKjWEnU7fNN4"
+    },
+    {
+      "artist": "Shakira, Burna Boy",
+      "duration": 223448,
+      "name": "Dai Dai",
+      "previewUrl": "https://p.scdn.co/mp3-preview/a6955a6725dcf614e9915396987847ea0b509580",
+      "uri": "spotify:track:0kosUz0jePvjiz4ctmR6wL"
+    },
+    {
+      "artist": "KATSEYE",
+      "duration": 158494,
+      "name": "Animal",
+      "previewUrl": "https://p.scdn.co/mp3-preview/65040556453e4f1c76bcefebf54a718521588331",
+      "uri": "spotify:track:3ouNEk0tv5TTi8VWMe1xbX"
+    },
+    {
+      "artist": "Dominic Fike",
+      "duration": 97960,
+      "name": "Babydoll",
+      "previewUrl": "https://p.scdn.co/mp3-preview/bf5ab98492256120bd9c48658e9c899c8692f77f",
+      "uri": "spotify:track:7yNf9YjeO5JXUE3JEBgnYc"
+    },
+    {
+      "artist": "Ella Langley",
+      "duration": 232226,
+      "name": "Choosin' Texas",
+      "previewUrl": "https://p.scdn.co/mp3-preview/ad3f225321f11467402cc47e09f9ea1195f3de91",
+      "uri": "spotify:track:65DbTqJKhbwqYbZ1Okr0rc"
+    },
+    {
+      "artist": "Temper City",
+      "duration": 180740,
+      "name": "Self Aware",
+      "previewUrl": "https://p.scdn.co/mp3-preview/98af5b6b77831ad55b6d1129148745705a311973",
+      "uri": "spotify:track:4qW3BbQAwZsrnu8a3ZRdyT"
+    },
+    {
+      "artist": "Olivia Dean",
+      "duration": 184000,
+      "name": "Man I Need",
+      "previewUrl": "https://p.scdn.co/mp3-preview/0a36635f94b4e44e6e4f5b7edb3f501d458812d9",
+      "uri": "spotify:track:1qbmS6ep2hbBRaEZFpn7BX"
+    },
+    {
+      "artist": "Steve Lacy",
+      "duration": 170584,
+      "name": "oh yeah?",
+      "previewUrl": "https://p.scdn.co/mp3-preview/72b6457625435b7f64c345e86930e5f0071c559c",
+      "uri": "spotify:track:22NHkFYbgxB2Zirj29Gbp8"
+    },
+    {
+      "artist": "Ariana Grande",
+      "duration": 184248,
+      "name": "petal",
+      "previewUrl": "https://p.scdn.co/mp3-preview/30dc1adb43c170165bb8091e788b55f26f2fc672",
+      "uri": "spotify:track:70pVCVMGjmIWPbWXDwf11e"
+    },
+    {
+      "artist": "ANOTR, 54 Ultra",
+      "duration": 191076,
+      "name": "Talk To You (ft. 54 Ultra)",
+      "previewUrl": "https://p.scdn.co/mp3-preview/b55c8fa4e31192a3e35ad53d3e889733f9cd9da1",
+      "uri": "spotify:track:0kl6Ozan3fuUdCl6TlB15v"
+    },
+    {
+      "artist": "Drake",
+      "duration": 237344,
+      "name": "Janice STFU",
+      "previewUrl": "https://p.scdn.co/mp3-preview/1de9b315e1aa811aedaf905b1058b668b2d3146e",
+      "uri": "spotify:track:514joG57v4yKTsfQmz7stz"
+    },
+    {
+      "artist": "Olivia Rodrigo",
+      "duration": 297090,
+      "name": "the cure",
+      "previewUrl": "https://p.scdn.co/mp3-preview/7559346825a2233855b5fc77e84a954606de3444",
+      "uri": "spotify:track:4EoJ151oQ5jY48z4RhSE96"
+    },
+    {
+      "artist": "Sam Fender, Olivia Dean",
+      "duration": 339410,
+      "name": "Rein Me In (with Olivia Dean)",
+      "previewUrl": "https://p.scdn.co/mp3-preview/6c85f9e4507e93478ee4adb7782f1a35a9d0e1ce",
+      "uri": "spotify:track:7MZHqgTVTnN6xZGYAcEEAf"
+    },
+    {
+      "artist": "Taylor Swift",
+      "duration": 226073,
+      "name": "The Fate of Ophelia",
+      "previewUrl": "https://p.scdn.co/mp3-preview/f2765af4fcb12d896343889d5faa8144f976f42b",
+      "uri": "spotify:track:31TXxq8gfgYyrYClnYY48m"
+    },
+    {
+      "artist": "Bad Bunny",
+      "duration": 237117,
+      "name": "DtMF",
+      "previewUrl": "https://p.scdn.co/mp3-preview/e41ce6b82410d81c08baacca2a7169e5ace4287d",
+      "uri": "spotify:track:3sK8wGT43QFpWrvNQsrQya"
+    },
+    {
+      "artist": "RAYE",
+      "duration": 197142,
+      "name": "WHERE IS MY HUSBAND!",
+      "previewUrl": "https://p.scdn.co/mp3-preview/0194ff4186a1f53bff2cdf6d7660289ca8eb0e7e",
+      "uri": "spotify:track:55lijDD6OAjLFFUHU9tcDm"
+    },
+    {
+      "artist": "Bruno Mars",
+      "duration": 204068,
+      "name": "Risk It All",
+      "previewUrl": "https://p.scdn.co/mp3-preview/2467ff71a7508c57a62112ee5beb996bd6b9e957",
+      "uri": "spotify:track:5y2ijHECwFYWqcAHKTZgzD"
+    },
+    {
+      "artist": "JENNIE",
+      "duration": 199166,
+      "name": "FALLEN ANGEL",
+      "previewUrl": "https://p.scdn.co/mp3-preview/699f24dbd5b0b43fd02ebfc65d441926aaf696bf",
+      "uri": "spotify:track:75QkBCdRc5DGgcyPiVSg4b"
+    },
+    {
+      "artist": "Ashe",
+      "duration": 198840,
+      "name": "Stop The Wedding!",
+      "previewUrl": "https://p.scdn.co/mp3-preview/8a374e33d78679e1143d7a07797ddfa0225f8586",
+      "uri": "spotify:track:3zOYmiNOuyDL0ClxJcEJ0T"
+    },
+    {
+      "artist": "Dave, Tems",
+      "duration": 219743,
+      "name": "Raindance (feat. Tems)",
+      "previewUrl": "https://p.scdn.co/mp3-preview/7d860804d259f81b4a7bc04900a5410d99995fd4",
+      "uri": "spotify:track:3oTuTpF1F3A7rEC6RKsMRz"
+    },
+    {
+      "artist": "Justin Bieber",
+      "duration": 176453,
+      "name": "DAISIES",
+      "previewUrl": "https://p.scdn.co/mp3-preview/d990a355be1d84adc0882bda733862fba7767e70",
+      "uri": "spotify:track:5BZsQlgw21vDOAjoqkNgKb"
+    },
+    {
+      "artist": "Taylor Swift",
+      "duration": 178186,
+      "name": "I Knew It, I Knew You - From \"Toy Story 5\"",
+      "previewUrl": "https://p.scdn.co/mp3-preview/d21ded2a54dde5461f908b1bf26f1b4bae5ac139",
+      "uri": "spotify:track:5uPaqMMt59KGrdKIitDRqa"
+    },
+    {
+      "artist": "PinkPantheress, Zara Larsson",
+      "duration": 184761,
+      "name": "Stateside + Zara Larsson",
+      "previewUrl": "https://p.scdn.co/mp3-preview/cc3201e7ed85d09f1683e591fd2eb964ea7247a6",
+      "uri": "spotify:track:1DwscornXpj8fmOmYVlqZt"
+    },
+    {
+      "artist": "HUGEL, SOLTO (FR)",
+      "duration": 156393,
+      "name": "Jamaican (Bam Bam)",
+      "previewUrl": "https://p.scdn.co/mp3-preview/90e14dd98b61140a5259ce400de788704d406742",
+      "uri": "spotify:track:7e4zDInS6tA2jwzphvs2Ay"
+    },
+    {
+      "artist": "ADÉLA",
+      "duration": 181270,
+      "name": "Nicole Kidman",
+      "previewUrl": "https://p.scdn.co/mp3-preview/68bc3cb0611cfe6569ce56eeb025359233168a69",
+      "uri": "spotify:track:70cHKK8bHAfJrOGVnfRG9J"
+    },
+    {
+      "artist": "Olivia Dean",
+      "duration": 169000,
+      "name": "So Easy (To Fall In Love)",
+      "previewUrl": "https://p.scdn.co/mp3-preview/e0ea7353932017364bdb12dc776e89b360abac42",
+      "uri": "spotify:track:6sGIMrtIzQjdzNndVxe397"
+    },
+    {
+      "artist": "Alyssa Grace",
+      "duration": 177428,
+      "name": "bloodstream",
+      "previewUrl": "https://p.scdn.co/mp3-preview/f1e7acbb1c04e8ba21d08d2402cf069a8eed8f96",
+      "uri": "spotify:track:2oWFJJW9d1bIra3zHjR6GO"
+    },
+    {
+      "artist": "LISA",
+      "duration": 188531,
+      "name": "SaWaDiKa",
+      "previewUrl": "https://p.scdn.co/mp3-preview/3f5b29adf9f673b9f985c1976c26f5820649d711",
+      "uri": "spotify:track:1VWiDyYTrqQhhmnWANWkFa"
+    },
+    {
+      "artist": "Zara Larsson",
+      "duration": 189898,
+      "name": "Midnight Sun",
+      "previewUrl": "https://p.scdn.co/mp3-preview/c5bbc379559c92c9d07e2cebf4a1e14029d01331",
+      "uri": "spotify:track:37UCSVSqiPGdR1DijOFyYY"
+    },
+    {
+      "artist": "KATSEYE",
+      "duration": 140720,
+      "name": "Hootie Frutti",
+      "previewUrl": "https://p.scdn.co/mp3-preview/b90cdabeb3093431041841713c812e70bafb1478",
+      "uri": "spotify:track:6oUUmBcUbZa5O48V5pjgAD"
+    },
+    {
+      "artist": "Noah Kahan",
+      "duration": 286967,
+      "name": "Orbiter",
+      "previewUrl": "https://p.scdn.co/mp3-preview/3f175c1a53a23119bfe50c9ca04e68d27d3131a5",
+      "uri": "spotify:track:4W6yulge3h7FSy0zGFrNKs"
+    },
+    {
+      "artist": "SIENNA SPIRO",
+      "duration": 173975,
+      "name": "Great Expectation",
+      "previewUrl": "https://p.scdn.co/mp3-preview/f82f2f3e714a66934fc309e357cbf249ad045f62",
+      "uri": "spotify:track:7ujApz6iFP3PmKIDGcaGbe"
+    },
+    {
+      "artist": "Sabrina Carpenter",
+      "duration": 213645,
+      "name": "Manchild",
+      "previewUrl": "https://p.scdn.co/mp3-preview/37c21b6b0df9b7156527d0729a58b6db37c88a0a",
+      "uri": "spotify:track:42UBPzRMh5yyz0EDPr6fr1"
+    },
+    {
+      "artist": "STELLA LEFTY",
+      "duration": 170859,
+      "name": "Boston",
+      "previewUrl": "https://p.scdn.co/mp3-preview/7ffa15bbf70382813f8661408e976cc41655b367",
+      "uri": "spotify:track:36idurZmYRjJ56KQ8JD9bN"
+    },
+    {
+      "artist": "sombr",
+      "duration": 209066,
+      "name": "Homewrecker",
+      "previewUrl": "https://p.scdn.co/mp3-preview/d46acdc8f94c6fa471388c7a10c619bb08c88197",
+      "uri": "spotify:track:7tICCrK3CcyRFKza7yrR0z"
+    },
+    {
+      "artist": "F3miii",
+      "duration": 185806,
+      "name": "NOBLE",
+      "previewUrl": "https://p.scdn.co/mp3-preview/5fada77b20c9b592ea707bf74334195c2b8a125f",
+      "uri": "spotify:track:2LSmH4vxyRhkJ2pPqcmkXw"
+    },
+    {
+      "artist": "Morgan Wallen",
+      "duration": 213805,
+      "name": "Been By Now",
+      "previewUrl": "https://p.scdn.co/mp3-preview/fe48c80ab8e5e0dd0458a8af317ce3df8bfbe27f",
+      "uri": "spotify:track:3xwMjQriBVW0OGEvNKo9c0"
+    },
+    {
+      "artist": "Bruno Mars",
+      "duration": 212973,
+      "name": "I Just Might",
+      "previewUrl": "https://p.scdn.co/mp3-preview/d3b9a6318dcc942387b69c677a80377044856d69",
+      "uri": "spotify:track:12bYYQaLqHliSXvRIYlq8G"
+    },
+    {
+      "artist": "Ella Langley",
+      "duration": 217240,
+      "name": "Be Her",
+      "previewUrl": "https://p.scdn.co/mp3-preview/17eee24507cd710f88bb3ae4ea6c4157ed9b3489",
+      "uri": "spotify:track:05CjWFAcAlY6O9po6Qwakk"
+    },
+    {
+      "artist": "JISOO",
+      "duration": 159095,
+      "name": "CLICK",
+      "previewUrl": "https://p.scdn.co/mp3-preview/c41abed6c94df3735766be1ec2e291e666b18ef9",
+      "uri": "spotify:track:1zyNO73bPNPC6KBi3raNmZ"
+    },
+    {
+      "artist": "Audrey Hobert",
+      "duration": 170320,
+      "name": "Sue me",
+      "previewUrl": "https://p.scdn.co/mp3-preview/3585c24b32da6477e0231e7b18e41c3599e42732",
+      "uri": "spotify:track:6ZAuQOgLrNQb9s7BXheuTy"
+    },
+    {
+      "artist": "Dominic Fike",
+      "duration": 144101,
+      "name": "White Keys",
+      "previewUrl": "https://p.scdn.co/mp3-preview/4c09f53084e36b6c85f8b2a44893c226a3194f42",
+      "uri": "spotify:track:5ViLKrbyL3HD6wsq3AB9eI"
+    },
+    {
+      "artist": "Bella Kay",
+      "duration": 183237,
+      "name": "iloveitiloveitiloveit",
+      "previewUrl": "https://p.scdn.co/mp3-preview/bcb1c4999d947ff0541bc11b164d91069fad1669",
+      "uri": "spotify:track:5IMpnpD0tQVcqWlVIgtAtV"
+    },
+    {
+      "artist": "BTS",
+      "duration": 159007,
+      "name": "SWIM",
+      "previewUrl": "https://p.scdn.co/mp3-preview/acafb81cc609de53b9687a40f214f79d828b6947",
+      "uri": "spotify:track:68lbSrXDORS51pmyjZv712"
+    }
+  ]
+}
