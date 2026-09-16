@@ -511,14 +511,21 @@ app.post('/api/youtube/convert', async (req, res) => {
     let safeTitle = 'audio';
     let videoId = Date.now().toString() + '-' + Math.round(Math.random()*1e9);
 
+    console.log(`[CONVERT] YouTube URL: ${url}`);
+    console.log(`[CONVERT] yt-dlp path: ${ytDlpExe}`);
+    console.log(`[CONVERT] ffmpeg path: ${ffmpegExe}`);
+    console.log(`[CONVERT] deno path: ${denoExe}`);
+
     try {
         console.log(`[CONVERT] Fetching metadata for ${url}...`);
-        const { stdout: metadataStr } = await execPromise(`"${ytDlpExe}" -j "${url}"`);
+        const { stdout: metadataStr } = await execPromise(`"${ytDlpExe}" --remote-components ejs:npm -j "${url}"`);
         const metadata = JSON.parse(metadataStr);
         safeTitle = metadata.title.replace(/[^a-zA-Z0-9 ]/g, "").trim().substring(0, 50) || 'audio';
         if (metadata.id) videoId = metadata.id + '-' + Math.round(Math.random()*1e5);
     } catch (err) {
-        console.error("[CONVERT] Failed to fetch yt-dlp metadata, falling back to basic ID.", err.message);
+        console.error(`[CONVERT] Metadata yt-dlp failed`);
+        console.error(`[CONVERT] exit code: ${err.code || 'unknown'}`);
+        console.error(`[CONVERT] stderr: ${err.stderr || err.message}`);
     }
 
     const outputPath = path.join(tmpDir, `${videoId}.%(ext)s`);
@@ -544,7 +551,9 @@ app.post('/api/youtube/convert', async (req, res) => {
         });
 
     } catch (err) {
-        console.error("[CONVERT] yt-dlp/ffmpeg execution failed:", err.message);
+        console.error(`[CONVERT] Conversion yt-dlp/ffmpeg failed`);
+        console.error(`[CONVERT] exit code: ${err.code || 'unknown'}`);
+        console.error(`[CONVERT] stderr: ${err.stderr || err.message}`);
         
         // Clean up strictly any orphaned file exactly matching the output ID
         const files = fs.readdirSync(tmpDir);
@@ -556,7 +565,10 @@ app.post('/api/youtube/convert', async (req, res) => {
             }
         }
         
-        return res.status(500).json({ error: 'Failed to convert video to MP3.' });
+        return res.status(500).json({ 
+            error: 'Failed to convert video to MP3.',
+            details: String(err.stderr || err.message).trim().substring(0, 500)
+        });
     }
 });
 
