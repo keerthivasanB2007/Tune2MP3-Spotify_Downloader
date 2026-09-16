@@ -56,6 +56,9 @@ const findWinGetPackageExe = (fileName, preferGyan = false) => {
     return foundPaths[0]; // fallback to first match
 };
 
+let denoExe = 'deno';
+let isDenoAvailable = false;
+
 try {
     const { execSync } = require('child_process');
     if (process.platform === 'win32') {
@@ -72,18 +75,23 @@ try {
             const wgPath = findWinGetPackageExe('ffmpeg.exe', true);
             if (wgPath) ffmpegExe = wgPath;
         }
+
+        try { denoExe = execSync('where.exe deno', { stdio: 'pipe' }).toString().split(/\r?\n/)[0].trim(); } catch(e) {}
     } else {
         try { ytDlpExe = execSync('which yt-dlp', { stdio: 'pipe' }).toString().split('\n')[0].trim(); } catch (e) {}
         try { ffmpegExe = execSync('which ffmpeg', { stdio: 'pipe' }).toString().split('\n')[0].trim(); } catch (e) {}
+        try { denoExe = execSync('which deno', { stdio: 'pipe' }).toString().split('\n')[0].trim(); } catch (e) {}
     }
 } catch (e) { }
 
 isYtDlpAvailable = (ytDlpExe !== 'yt-dlp' && fs.existsSync(ytDlpExe)) || process.platform !== 'win32';
 isFfmpegAvailable = (ffmpegExe !== 'ffmpeg' && fs.existsSync(ffmpegExe)) || process.platform !== 'win32';
+isDenoAvailable = (denoExe !== 'deno' && fs.existsSync(denoExe)) || process.platform !== 'win32';
 
 if (isYtDlpAvailable && isFfmpegAvailable) {
     console.log(`[INFO] yt-dlp resolved: ${ytDlpExe}`);
     console.log(`[INFO] FFmpeg resolved: ${ffmpegExe}`);
+    console.log(`[INFO] Deno resolved: ${isDenoAvailable ? denoExe : 'NOT FOUND'}`);
 } else {
     console.warn(`[WARNING] Executable resolution failed.`);
 }
@@ -107,6 +115,29 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.get('/health', (req, res) => {
     res.status(200).json({ status: 'ok' });
+});
+
+app.get('/api/youtube/diagnostics', async (req, res) => {
+    try {
+        const { execSync } = require('child_process');
+        let ytVersion = 'unknown';
+        let denoVersion = 'unknown';
+        try { ytVersion = execSync(`"${ytDlpExe}" --version`, { stdio: 'pipe' }).toString().trim(); } catch(e){}
+        try { denoVersion = execSync(`"${denoExe}" --version`, { stdio: 'pipe' }).toString().split('\n')[0].trim(); } catch(e){}
+        
+        res.json({
+            ytDlpAvailable: isYtDlpAvailable,
+            ffmpegAvailable: isFfmpegAvailable,
+            denoAvailable: isDenoAvailable,
+            ytDlpPath: ytDlpExe,
+            ffmpegPath: ffmpegExe,
+            denoPath: denoExe,
+            ytDlpVersion: ytVersion,
+            denoVersion: denoVersion
+        });
+    } catch(e) {
+        res.status(500).json({ error: 'Diagnostics failed' });
+    }
 });
 
 // URL validation helper
@@ -385,7 +416,12 @@ app.post('/api/youtube/convert-track', async (req, res) => {
     if (clientId) sendSse(clientId, { trackIndex, trackName, status: 'downloading', progress: 0 });
 
     try {
-        const ytdlp = spawn(ytDlpExe, ['--ffmpeg-location', ffmpegExe, '-x', '--audio-format', 'mp3', '-o', outputPath, url]);
+        let stderrLog = "";
+        
+        // Use basic yt-dlp command. Add EJS components if needed for Render JS execution handling.
+        const ytdlpArgs = ['--ffmpeg-location', ffmpegExe, '--remote-components', 'ejs:npm', '-x', '--audio-format', 'mp3', '-o', outputPath, url];
+
+        const ytdlp = spawn(ytDlpExe, ytdlpArgs);
 
         ytdlp.stdout.on('data', (data) => {
             const output = data.toString();
@@ -400,6 +436,8 @@ app.post('/api/youtube/convert-track', async (req, res) => {
 
         ytdlp.stderr.on('data', (data) => {
             const output = data.toString();
+            stderrLog += output; // Capture stderr logs completely
+            
             const match = output.match(/\[download\]\s+([\d\.]+)%/);
             if (match && match[1]) {
                 if (clientId) sendSse(clientId, { trackIndex, trackName, status: 'downloading', progress: parseFloat(match[1]) });
@@ -411,14 +449,26 @@ app.post('/api/youtube/convert-track', async (req, res) => {
 
         ytdlp.on('close', (code) => {
             if (code !== 0) {
+                console.error(`[CONVERT-TRACK] track name: ${trackName}`);
+                console.error(`[CONVERT-TRACK] YouTube URL: ${url}`);
+                console.error(`[CONVERT-TRACK] yt-dlp exit code: ${code}`);
+                console.error(`[CONVERT-TRACK] stderr:\n${stderrLog}`);
+                
                 if (clientId) sendSse(clientId, { trackIndex, trackName, status: 'failed', progress: 0, error: 'code ' + code });
+                
                 const files = fs.readdirSync(tmpDir);
                 for (const file of files) {
                     if (file.startsWith(videoId)) {
                         try { fs.unlinkSync(path.join(tmpDir, file)); } catch(e) {}
                     }
                 }
-                if (!res.headersSent) return res.status(500).json({ error: 'yt-dlp failed' });
+                
+                if (!res.headersSent) {
+                    return res.status(500).json({ 
+                        error: 'Backend failed',
+                        details: stderrLog.trim() 
+                    });
+                }
                 return;
             }
             
@@ -434,6 +484,7 @@ app.post('/api/youtube/convert-track', async (req, res) => {
         });
         
         ytdlp.on('error', (err) => {
+            console.error(`[CONVERT-TRACK] track name: ${trackName}, err: ${err.message}`);
             if (clientId) sendSse(clientId, { trackIndex, trackName, status: 'failed', progress: 0, error: err.message });
             if (!res.headersSent) res.status(500).json({ error: 'Spawn failed' });
         });
@@ -475,7 +526,7 @@ app.post('/api/youtube/convert', async (req, res) => {
 
     console.log(`[CONVERT] Starting conversion to MP3 for ${safeTitle}...`);
     try {
-        await execPromise(`"${ytDlpExe}" --ffmpeg-location "${ffmpegExe}" -x --audio-format mp3 -o "${outputPath}" "${url}"`);
+        await execPromise(`"${ytDlpExe}" --ffmpeg-location "${ffmpegExe}" --remote-components ejs:npm -x --audio-format mp3 -o "${outputPath}" "${url}"`);
         
         if (!fs.existsSync(mp3Path)) {
             throw new Error(`File was not created at ${mp3Path}`);
