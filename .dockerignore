@@ -1,0 +1,7 @@
+node_modules/
+.git/
+tmp/
+bulk_downloads/
+*.mp3
+boot_log.txt
+test_output.txt
