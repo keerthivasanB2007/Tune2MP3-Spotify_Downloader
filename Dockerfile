@@ -6,9 +6,16 @@ RUN apt-get update && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
-# Install Deno (required by yt-dlp for JS execution on Render)
-RUN curl -fsSL https://deno.land/install.sh | DENO_INSTALL_ROOT=/usr/local sh
-RUN /usr/local/bin/deno --version
+# Install Deno v2.3.0 (required by yt-dlp for JS execution on Render)
+RUN curl -fL https://github.com/denoland/deno/releases/download/v2.3.0/deno-x86_64-unknown-linux-gnu.zip -o deno.zip && \
+    unzip deno.zip && \
+    rm deno.zip && \
+    chmod +x deno && \
+    mv deno /usr/local/bin/deno
+
+# Rigid Validation Check
+RUN /usr/local/bin/deno --version && /usr/local/bin/deno eval "console.log('DENO_OK')"
+
 ENV PATH="/usr/local/bin:${PATH}"
 
 # Install yt-dlp directly

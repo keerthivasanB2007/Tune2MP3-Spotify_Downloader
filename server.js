@@ -80,7 +80,13 @@ try {
     } else {
         try { ytDlpExe = execSync('which yt-dlp', { stdio: 'pipe' }).toString().split('\n')[0].trim(); } catch (e) {}
         try { ffmpegExe = execSync('which ffmpeg', { stdio: 'pipe' }).toString().split('\n')[0].trim(); } catch (e) {}
-        try { denoExe = execSync('which deno', { stdio: 'pipe' }).toString().split('\n')[0].trim(); } catch (e) {}
+        
+        denoExe = '/usr/local/bin/deno';
+        try { 
+            if (!fs.existsSync(denoExe)) {
+                denoExe = execSync('which deno', { stdio: 'pipe' }).toString().split('\n')[0].trim();
+            }
+        } catch (e) {}
     }
 } catch (e) { }
 
@@ -93,7 +99,11 @@ if (isYtDlpAvailable && isFfmpegAvailable) {
     console.log(`[INFO] FFmpeg resolved: ${ffmpegExe}`);
     
     let localDenoVer = 'unknown';
-    try { localDenoVer = require('child_process').execSync(`"${denoExe}" --version`, { stdio: 'pipe' }).toString().split('\n')[0].trim(); } catch(e){}
+    try { 
+        localDenoVer = require('child_process').execSync(`"${denoExe}" --version`, { stdio: 'pipe' }).toString().split('\n')[0].trim(); 
+    } catch(e) {
+        localDenoVer = (e.stderr ? e.stderr.toString().trim() : e.message) || 'Error getting version';
+    }
     
     console.log(`[INFO] Deno resolved: ${isDenoAvailable ? denoExe : 'NOT FOUND'}`);
     console.log(`[INFO] Deno version: ${localDenoVer}`);
@@ -128,7 +138,12 @@ app.get('/api/youtube/diagnostics', async (req, res) => {
         let ytVersion = 'unknown';
         let denoVersion = 'unknown';
         try { ytVersion = execSync(`"${ytDlpExe}" --version`, { stdio: 'pipe' }).toString().trim(); } catch(e){}
-        try { denoVersion = execSync(`"${denoExe}" --version`, { stdio: 'pipe' }).toString().split('\n')[0].trim(); } catch(e){}
+        
+        try { 
+            denoVersion = execSync(`"${denoExe}" --version`, { stdio: 'pipe' }).toString().split('\n')[0].trim(); 
+        } catch(e) {
+            denoVersion = (e.stderr ? e.stderr.toString().trim() : e.message) || 'Error executing Deno';
+        }
         
         res.json({
             ytDlpAvailable: isYtDlpAvailable,
