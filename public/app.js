@@ -239,15 +239,31 @@ document.addEventListener('DOMContentLoaded', () => {
             btn.textContent = 'Converting...';
 
             try {
+                console.log('[DOWNLOAD] button clicked');
+                console.log('[DOWNLOAD] URL:', url);
+                console.log('[DOWNLOAD] endpoint:', '/api/youtube/convert');
+
                 const res = await fetch('/api/youtube/convert', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ url })
                 });
 
+                console.log('[DOWNLOAD] response status:', res.status);
+                console.log('[DOWNLOAD] response content-type:', res.headers.get('content-type'));
+
                 if (!res.ok) {
-                    const errorData = await res.json().catch(() => ({}));
-                    throw new Error(errorData.error || 'Conversion process failed.');
+                    let errorBody;
+                    try {
+                        errorBody = await res.text();
+                    } catch (e) {
+                        errorBody = 'Could not read response body';
+                    }
+                    console.error('[DOWNLOAD] backend error:', errorBody);
+                    
+                    let parsed;
+                    try { parsed = JSON.parse(errorBody); } catch(e) {}
+                    throw new Error((parsed && parsed.error) ? parsed.error : 'Conversion process failed.');
                 }
 
                 const blob = await res.blob();

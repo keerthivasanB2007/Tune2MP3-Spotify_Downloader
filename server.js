@@ -496,6 +496,7 @@ app.post('/api/youtube/convert-track', async (req, res) => {
 });
 
 app.post('/api/youtube/convert', async (req, res) => {
+    console.log('[REQUEST] POST /api/youtube/convert received');
     const { url } = req.body;
     if (!url || !isValidYoutubeUrl(url)) {
         return res.status(400).json({ error: 'Invalid YouTube URL provided.' });
