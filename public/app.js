@@ -263,7 +263,12 @@ document.addEventListener('DOMContentLoaded', () => {
                     
                     let parsed;
                     try { parsed = JSON.parse(errorBody); } catch(e) {}
-                    throw new Error((parsed && parsed.error) ? parsed.error : 'Conversion process failed.');
+                    let finalErr = 'Conversion process failed.';
+                    if (parsed) {
+                        if (parsed.details) finalErr = parsed.details;
+                        else if (parsed.error) finalErr = parsed.error;
+                    }
+                    throw new Error(finalErr);
                 }
 
                 const blob = await res.blob();
@@ -406,7 +411,10 @@ document.addEventListener('DOMContentLoaded', () => {
                         body: JSON.stringify({ url: item.track.youtube.url, clientId, trackIndex: item.index, trackName: item.track.name })
                     });
                     
-                    if (!res.ok) throw new Error('Backend failed');
+                    if (!res.ok) {
+                        const errObj = await res.json().catch(() => ({}));
+                        throw new Error(errObj.details || errObj.error || 'Backend failed');
+                    }
                     const blob = await res.blob();
                     
                     const safeTitle = item.track.name.replace(/[<>:"/\\|?*]/g, "").trim() || 'audio';

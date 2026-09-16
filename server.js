@@ -160,6 +160,63 @@ app.get('/api/youtube/diagnostics', async (req, res) => {
     }
 });
 
+app.get('/api/youtube/test-conversion', async (req, res) => {
+    const url = 'https://www.youtube.com/watch?v=fRIhCiUVaKs';
+    let videoId = Date.now().toString() + '-' + Math.round(Math.random()*1e9);
+    const outputPath = path.join(tmpDir, `${videoId}.%(ext)s`);
+    const mp3Path = path.join(tmpDir, `${videoId}.mp3`);
+    
+    // Exact args from convert-track
+    const ytdlpArgs = ['--ffmpeg-location', ffmpegExe, '--js-runtimes', 'deno', '--remote-components', 'ejs:npm', '-x', '--audio-format', 'mp3', '-o', outputPath, url];
+    
+    let result = {
+        command: ytDlpExe,
+        args: ytdlpArgs.join(' '),
+        deno: denoExe,
+        ffmpeg: ffmpegExe,
+        url: url,
+        spawnError: null,
+        exitCode: null,
+        stdout: "",
+        stderr: "",
+        mp3Exists: false,
+        mp3Size: 0,
+        ytDlpVersion: "unknown",
+        denoVersion: "unknown",
+        ffmpegVersion: "unknown"
+    };
+
+    try { result.ytDlpVersion = require('child_process').execSync(`"${ytDlpExe}" --version`, { stdio: 'pipe' }).toString().trim(); } catch(e){}
+    try { result.denoVersion = require('child_process').execSync(`"${denoExe}" --version`, { stdio: 'pipe' }).toString().split('\n')[0].trim(); } catch(e){}
+    try { result.ffmpegVersion = require('child_process').execSync(`"${ffmpegExe}" -version`, { stdio: 'pipe' }).toString().split('\n')[0].trim(); } catch(e){}
+
+    try {
+        const ytdlp = spawn(ytDlpExe, ytdlpArgs);
+        
+        ytdlp.stdout.on('data', (data) => { result.stdout += data.toString(); });
+        ytdlp.stderr.on('data', (data) => { result.stderr += data.toString(); });
+        
+        ytdlp.on('error', (err) => {
+            result.spawnError = err.message;
+            if (!res.headersSent) res.json(result);
+        });
+        
+        ytdlp.on('close', (code) => {
+            result.exitCode = code;
+            if (fs.existsSync(mp3Path)) {
+                result.mp3Exists = true;
+                const stats = fs.statSync(mp3Path);
+                result.mp3Size = stats.size;
+                try { fs.unlinkSync(mp3Path); } catch (e) {}
+            }
+            if (!res.headersSent) res.json(result);
+        });
+    } catch (err) {
+        result.spawnError = err.message;
+        if (!res.headersSent) res.json(result);
+    }
+});
+
 // URL validation helper
 const isValidSpotifyPlaylistUrl = (url) => {
     try {
@@ -436,15 +493,22 @@ app.post('/api/youtube/convert-track', async (req, res) => {
     if (clientId) sendSse(clientId, { trackIndex, trackName, status: 'downloading', progress: 0 });
 
     try {
+        let stdoutLog = "";
         let stderrLog = "";
         
         // Use basic yt-dlp command. Add EJS components if needed for Render JS execution handling.
         const ytdlpArgs = ['--ffmpeg-location', ffmpegExe, '--js-runtimes', 'deno', '--remote-components', 'ejs:npm', '-x', '--audio-format', 'mp3', '-o', outputPath, url];
 
+        console.log(`[CONVERT-TRACK] executable: ${ytDlpExe}`);
+        console.log(`[CONVERT-TRACK] args: ${ytdlpArgs.join(' ')}`);
+        console.log(`[CONVERT-TRACK] deno: ${denoExe}`);
+        console.log(`[CONVERT-TRACK] ffmpeg: ${ffmpegExe}`);
+
         const ytdlp = spawn(ytDlpExe, ytdlpArgs);
 
         ytdlp.stdout.on('data', (data) => {
             const output = data.toString();
+            stdoutLog += output;
             const match = output.match(/\[download\]\s+([\d\.]+)%/);
             if (match && match[1]) {
                 if (clientId) sendSse(clientId, { trackIndex, trackName, status: 'downloading', progress: parseFloat(match[1]) });
@@ -485,8 +549,10 @@ app.post('/api/youtube/convert-track', async (req, res) => {
                 
                 if (!res.headersSent) {
                     return res.status(500).json({ 
-                        error: 'Backend failed',
-                        details: stderrLog.trim() 
+                        error: 'yt-dlp conversion failed',
+                        exitCode: code,
+                        details: stderrLog.trim(),
+                        stdout: stdoutLog.trim()
                     });
                 }
                 return;
