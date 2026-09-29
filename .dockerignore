@@ -8,6 +8,10 @@ boot_log.txt
 test_output.txt
 .env
 .env.*
+youtube-cookies.txt
+cookies.txt
+*.cookies.txt
+secrets/
 *.jsonl
 data_full.json
 details_full.json

@@ -111,6 +111,36 @@ if (isYtDlpAvailable && isFfmpegAvailable) {
     console.warn(`[WARNING] Executable resolution failed.`);
 }
 
+// Helper to resolve optional YouTube cookie file arguments
+const getYoutubeCookieArgs = () => {
+    const candidatePaths = [
+        process.env.YOUTUBE_COOKIES_FILE,
+        path.join(__dirname, 'secrets', 'youtube-cookies.txt'),
+        '/app/secrets/youtube-cookies.txt',
+        path.join(__dirname, 'youtube-cookies.txt'),
+        path.join(__dirname, 'cookies.txt')
+    ].filter(Boolean);
+
+    for (const filePath of candidatePaths) {
+        try {
+            if (fs.existsSync(filePath) && fs.statSync(filePath).isFile()) {
+                fs.accessSync(filePath, fs.constants.R_OK);
+                return ['--cookies', filePath];
+            }
+        } catch (e) {
+            // Ignore access errors and continue checking next candidates
+        }
+    }
+    return [];
+};
+
+const initialCookieArgs = getYoutubeCookieArgs();
+if (initialCookieArgs.length > 0) {
+    console.log('[INFO] YouTube cookies: configured');
+} else {
+    console.log('[INFO] YouTube cookies: not configured');
+}
+
 // URL validation helper for youtube
 const isValidYoutubeUrl = (url) => {
     try {
@@ -144,11 +174,14 @@ app.get('/api/youtube/diagnostics', async (req, res) => {
         } catch(e) {
             denoVersion = (e.stderr ? e.stderr.toString().trim() : e.message) || 'Error executing Deno';
         }
+
+        const cookiesConfigured = getYoutubeCookieArgs().length > 0;
         
         res.json({
             ytDlpAvailable: isYtDlpAvailable,
             ffmpegAvailable: isFfmpegAvailable,
             denoAvailable: isDenoAvailable,
+            youtubeCookiesConfigured: cookiesConfigured,
             ytDlpPath: ytDlpExe,
             ffmpegPath: ffmpegExe,
             denoPath: denoExe,
@@ -166,8 +199,9 @@ app.get('/api/youtube/test-conversion', async (req, res) => {
     const outputPath = path.join(tmpDir, `${videoId}.%(ext)s`);
     const mp3Path = path.join(tmpDir, `${videoId}.mp3`);
     
-    // Exact args from convert-track
-    const ytdlpArgs = ['--ffmpeg-location', ffmpegExe, '--js-runtimes', 'deno', '--remote-components', 'ejs:npm', '--extractor-args', 'youtube:player_client=android,web', '-x', '--audio-format', 'mp3', '-o', outputPath, url];
+    // Exact args from convert-track with optional cookies
+    const cookieArgs = getYoutubeCookieArgs();
+    const ytdlpArgs = [...cookieArgs, '--ffmpeg-location', ffmpegExe, '--js-runtimes', 'deno', '--remote-components', 'ejs:npm', '--extractor-args', 'youtube:player_client=android,web', '-x', '--audio-format', 'mp3', '-o', outputPath, url];
     
     let result = {
         command: ytDlpExe,
@@ -497,8 +531,9 @@ app.post('/api/youtube/convert-track', async (req, res) => {
         let stdoutLog = "";
         let stderrLog = "";
         
-        // Use basic yt-dlp command. Add EJS components if needed for Render JS execution handling.
-        const ytdlpArgs = ['--ffmpeg-location', ffmpegExe, '--js-runtimes', 'deno', '--remote-components', 'ejs:npm', '--extractor-args', 'youtube:player_client=android,web', '-x', '--audio-format', 'mp3', '-o', outputPath, url];
+        // Use basic yt-dlp command with optional cookies. Add EJS components if needed for Render JS execution handling.
+        const cookieArgs = getYoutubeCookieArgs();
+        const ytdlpArgs = [...cookieArgs, '--ffmpeg-location', ffmpegExe, '--js-runtimes', 'deno', '--remote-components', 'ejs:npm', '--extractor-args', 'youtube:player_client=android,web', '-x', '--audio-format', 'mp3', '-o', outputPath, url];
 
         console.log(`[CONVERT-TRACK] executable: ${ytDlpExe}`);
         console.log(`[CONVERT-TRACK] args: ${ytdlpArgs.join(' ')}`);
@@ -604,9 +639,11 @@ app.post('/api/youtube/convert', async (req, res) => {
     console.log(`[CONVERT] ffmpeg path: ${ffmpegExe}`);
     console.log(`[CONVERT] deno path: ${denoExe}`);
 
+    const cookieArgs = getYoutubeCookieArgs();
+
     try {
         console.log(`[CONVERT] Fetching metadata for ${url}...`);
-        const metadataArgs = ['--js-runtimes', 'deno', '--remote-components', 'ejs:npm', '--extractor-args', 'youtube:player_client=android,web', '-j', url];
+        const metadataArgs = [...cookieArgs, '--js-runtimes', 'deno', '--remote-components', 'ejs:npm', '--extractor-args', 'youtube:player_client=android,web', '-j', url];
         const metadataStr = await new Promise((resolve, reject) => {
             const p = spawn(ytDlpExe, metadataArgs);
             let out = '';
@@ -630,7 +667,7 @@ app.post('/api/youtube/convert', async (req, res) => {
     const mp3Path = path.join(tmpDir, `${videoId}.mp3`);
 
     console.log(`[CONVERT] Starting conversion to MP3 for ${safeTitle}...`);
-    const ytdlpArgs = ['--ffmpeg-location', ffmpegExe, '--js-runtimes', 'deno', '--remote-components', 'ejs:npm', '--extractor-args', 'youtube:player_client=android,web', '-x', '--audio-format', 'mp3', '-o', outputPath, url];
+    const ytdlpArgs = [...cookieArgs, '--ffmpeg-location', ffmpegExe, '--js-runtimes', 'deno', '--remote-components', 'ejs:npm', '--extractor-args', 'youtube:player_client=android,web', '-x', '--audio-format', 'mp3', '-o', outputPath, url];
 
     let stdoutLog = '';
     let stderrLog = '';

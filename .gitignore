@@ -10,5 +10,10 @@ test_output.txt
 .env.*
 !.env.example
 
+youtube-cookies.txt
+cookies.txt
+*.cookies.txt
+secrets/
+
 .DS_Store
 Thumbs.db
