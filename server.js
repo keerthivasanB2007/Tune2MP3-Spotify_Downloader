@@ -170,7 +170,14 @@ const getYoutubeCookieArgs = () => {
         try {
             if (fs.existsSync(filePath) && fs.statSync(filePath).isFile()) {
                 fs.accessSync(filePath, fs.constants.R_OK);
-                return ['--cookies', filePath];
+                // Copy to writable tmp file to prevent OSError: [Errno 30] Read-only file system on Render
+                const writableCookiePath = path.join(tmpDir, 'active_cookies.txt');
+                try {
+                    fs.copyFileSync(filePath, writableCookiePath);
+                    return ['--cookies', writableCookiePath];
+                } catch (copyErr) {
+                    return ['--cookies', filePath];
+                }
             }
         } catch (e) {
             // Ignore access errors and continue checking next candidates
