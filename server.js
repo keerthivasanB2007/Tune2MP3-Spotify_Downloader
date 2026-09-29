@@ -111,6 +111,51 @@ if (isYtDlpAvailable && isFfmpegAvailable) {
     console.warn(`[WARNING] Executable resolution failed.`);
 }
 
+// POT Provider Management
+let potProviderProcess = null;
+const potServerPath = process.env.POT_SERVER_PATH || '/opt/bgutil-ytdlp-pot-provider/server/build/main.js';
+
+const startPotProvider = () => {
+    if (fs.existsSync(potServerPath)) {
+        try {
+            console.log(`[INFO] Starting POT provider from ${potServerPath}...`);
+            potProviderProcess = spawn('node', [potServerPath], {
+                stdio: ['ignore', 'pipe', 'pipe']
+            });
+
+            potProviderProcess.stdout.on('data', (d) => {
+                const msg = d.toString().trim();
+                if (msg) console.log(`[POT-PROVIDER] ${msg}`);
+            });
+
+            potProviderProcess.stderr.on('data', (d) => {
+                const msg = d.toString().trim();
+                if (msg) console.error(`[POT-PROVIDER ERR] ${msg}`);
+            });
+
+            potProviderProcess.on('error', (err) => {
+                console.error(`[POT-PROVIDER] Failed to start: ${err.message}`);
+            });
+
+            potProviderProcess.on('exit', (code, signal) => {
+                console.warn(`[POT-PROVIDER] Exited with code ${code}, signal ${signal}`);
+            });
+
+            process.on('exit', () => {
+                if (potProviderProcess) {
+                    try { potProviderProcess.kill(); } catch (e) {}
+                }
+            });
+        } catch (e) {
+            console.error(`[POT-PROVIDER] Spawn error:`, e.message);
+        }
+    } else {
+        console.log('[INFO] POT provider not found at configured path, skipping auto-start.');
+    }
+};
+
+startPotProvider();
+
 // Helper to resolve optional YouTube cookie file arguments
 const getYoutubeCookieArgs = () => {
     const candidatePaths = [
@@ -167,12 +212,40 @@ app.get('/api/youtube/diagnostics', async (req, res) => {
         const { execSync } = require('child_process');
         let ytVersion = 'unknown';
         let denoVersion = 'unknown';
+        let potPluginDetected = false;
+
         try { ytVersion = execSync(`"${ytDlpExe}" --version`, { stdio: 'pipe' }).toString().trim(); } catch(e){}
         
         try { 
             denoVersion = execSync(`"${denoExe}" --version`, { stdio: 'pipe' }).toString().split('\n')[0].trim(); 
         } catch(e) {
             denoVersion = (e.stderr ? e.stderr.toString().trim() : e.message) || 'Error executing Deno';
+        }
+
+        // Check if POT provider HTTP service is reachable
+        let potProviderReachable = false;
+        try {
+            const http = require('http');
+            potProviderReachable = await new Promise((resolve) => {
+                const req = http.get('http://127.0.0.1:4416', { timeout: 1000 }, (res) => {
+                    resolve(true);
+                });
+                req.on('error', () => resolve(false));
+                req.on('timeout', () => { req.destroy(); resolve(false); });
+            });
+        } catch(e) {
+            potProviderReachable = false;
+        }
+
+        // Check if plugin is recognized by Python
+        try {
+            const pyCheck = execSync('python3 -c "import yt_dlp_plugins.extractor.getpot_bgutil; print(\'OK\')"', { stdio: 'pipe' }).toString().trim();
+            if (pyCheck === 'OK') potPluginDetected = true;
+        } catch(e) {
+            try {
+                const pyCheck2 = execSync('python -c "import yt_dlp_plugins; print(\'OK\')"', { stdio: 'pipe' }).toString().trim();
+                if (pyCheck2 === 'OK') potPluginDetected = true;
+            } catch(e2) {}
         }
 
         const cookiesConfigured = getYoutubeCookieArgs().length > 0;
@@ -182,6 +255,8 @@ app.get('/api/youtube/diagnostics', async (req, res) => {
             ffmpegAvailable: isFfmpegAvailable,
             denoAvailable: isDenoAvailable,
             youtubeCookiesConfigured: cookiesConfigured,
+            potProviderReachable,
+            potPluginDetected,
             ytDlpPath: ytDlpExe,
             ffmpegPath: ffmpegExe,
             denoPath: denoExe,

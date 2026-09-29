@@ -1,8 +1,8 @@
-FROM node:20-slim
+FROM node:22-slim
 
-# Install dependencies (ffmpeg, Python, and unzip)
+# Install dependencies (ffmpeg, Python, git, and unzip)
 RUN apt-get update && \
-    apt-get install -y --no-install-recommends ffmpeg python3 python3-pip curl unzip && \
+    apt-get install -y --no-install-recommends ffmpeg python3 python3-pip git curl unzip && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
@@ -18,9 +18,14 @@ RUN /usr/local/bin/deno --version && /usr/local/bin/deno eval "console.log('DENO
 
 ENV PATH="/usr/local/bin:${PATH}"
 
-# Install yt-dlp directly
-RUN curl -L https://github.com/yt-dlp/yt-dlp/releases/latest/download/yt-dlp -o /usr/local/bin/yt-dlp && \
-    chmod a+rx /usr/local/bin/yt-dlp
+# Install yt-dlp and bgutil-ytdlp-pot-provider plugin
+RUN pip3 install --no-cache-dir --break-system-packages -U yt-dlp bgutil-ytdlp-pot-provider
+
+# Build bgutil-ytdlp-pot-provider server
+RUN git clone --single-branch https://github.com/Brainicism/bgutil-ytdlp-pot-provider.git /opt/bgutil-ytdlp-pot-provider && \
+    cd /opt/bgutil-ytdlp-pot-provider/server && \
+    npm ci && \
+    npx tsc
 
 WORKDIR /app
 
@@ -36,3 +41,4 @@ EXPOSE 3000
 
 # Start server
 CMD ["npm", "start"]
+
