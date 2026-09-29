@@ -3,5 +3,13 @@ node_modules/
 tmp/
 bulk_downloads/
 *.mp3
+*.log
 boot_log.txt
 test_output.txt
+.env
+.env.*
+*.jsonl
+data_full.json
+details_full.json
+struct.json
+TUNE2MP3_*.md

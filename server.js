@@ -450,6 +450,7 @@ app.get('/api/youtube/events', (req, res) => {
     res.setHeader('Content-Type', 'text/event-stream');
     res.setHeader('Cache-Control', 'no-cache');
     res.setHeader('Connection', 'keep-alive');
+    res.setHeader('X-Accel-Buffering', 'no');
     
     // Send initial connection dummy event to flush headers
     res.write(`data: ${JSON.stringify({ status: 'connected' })}\n\n`);
@@ -605,25 +606,64 @@ app.post('/api/youtube/convert', async (req, res) => {
 
     try {
         console.log(`[CONVERT] Fetching metadata for ${url}...`);
-        const { stdout: metadataStr } = await execPromise(`"${ytDlpExe}" --js-runtimes deno --remote-components ejs:npm --extractor-args youtube:player_client=android,web -j "${url}"`);
+        const metadataArgs = ['--js-runtimes', 'deno', '--remote-components', 'ejs:npm', '--extractor-args', 'youtube:player_client=android,web', '-j', url];
+        const metadataStr = await new Promise((resolve, reject) => {
+            const p = spawn(ytDlpExe, metadataArgs);
+            let out = '';
+            let errOut = '';
+            p.stdout.on('data', d => { out += d.toString(); });
+            p.stderr.on('data', d => { errOut += d.toString(); });
+            p.on('close', code => {
+                if (code === 0) resolve(out);
+                else reject(new Error(errOut || `yt-dlp metadata exit code ${code}`));
+            });
+            p.on('error', err => reject(err));
+        });
         const metadata = JSON.parse(metadataStr);
         safeTitle = metadata.title.replace(/[^a-zA-Z0-9 ]/g, "").trim().substring(0, 50) || 'audio';
         if (metadata.id) videoId = metadata.id + '-' + Math.round(Math.random()*1e5);
     } catch (err) {
-        console.error(`[CONVERT] Metadata yt-dlp failed`);
-        console.error(`[CONVERT] exit code: ${err.code || 'unknown'}`);
-        console.error(`[CONVERT] stderr: ${err.stderr || err.message}`);
+        console.error(`[CONVERT] Metadata yt-dlp failed:`, err.message);
     }
 
     const outputPath = path.join(tmpDir, `${videoId}.%(ext)s`);
     const mp3Path = path.join(tmpDir, `${videoId}.mp3`);
 
     console.log(`[CONVERT] Starting conversion to MP3 for ${safeTitle}...`);
-    try {
-        await execPromise(`"${ytDlpExe}" --ffmpeg-location "${ffmpegExe}" --js-runtimes deno --remote-components ejs:npm --extractor-args youtube:player_client=android,web -x --audio-format mp3 -o "${outputPath}" "${url}"`);
-        
+    const ytdlpArgs = ['--ffmpeg-location', ffmpegExe, '--js-runtimes', 'deno', '--remote-components', 'ejs:npm', '--extractor-args', 'youtube:player_client=android,web', '-x', '--audio-format', 'mp3', '-o', outputPath, url];
+
+    let stdoutLog = '';
+    let stderrLog = '';
+    const ytdlp = spawn(ytDlpExe, ytdlpArgs);
+
+    ytdlp.stdout.on('data', (data) => { stdoutLog += data.toString(); });
+    ytdlp.stderr.on('data', (data) => { stderrLog += data.toString(); });
+
+    ytdlp.on('close', (code) => {
+        if (code !== 0) {
+            console.error(`[CONVERT] Conversion yt-dlp/ffmpeg failed, exit code: ${code}`);
+            console.error(`[CONVERT] stderr: ${stderrLog}`);
+            
+            // Clean up strictly any orphaned file exactly matching the output ID
+            const files = fs.readdirSync(tmpDir);
+            for (const file of files) {
+                if (file.startsWith(videoId)) {
+                    try { fs.unlinkSync(path.join(tmpDir, file)); } catch(e) {}
+                }
+            }
+            
+            if (!res.headersSent) {
+                return res.status(500).json({ 
+                    error: 'Failed to convert video to MP3.',
+                    details: String(stderrLog || 'Process exited with code ' + code).trim().substring(0, 500)
+                });
+            }
+            return;
+        }
+
         if (!fs.existsSync(mp3Path)) {
-            throw new Error(`File was not created at ${mp3Path}`);
+            if (!res.headersSent) return res.status(500).json({ error: 'File not created' });
+            return;
         }
 
         res.download(mp3Path, `${safeTitle}.mp3`, (err) => {
@@ -636,27 +676,14 @@ app.post('/api/youtube/convert', async (req, res) => {
             });
             console.log(`[CONVERT] Successfully served and cleaned up ${safeTitle}.mp3`);
         });
+    });
 
-    } catch (err) {
-        console.error(`[CONVERT] Conversion yt-dlp/ffmpeg failed`);
-        console.error(`[CONVERT] exit code: ${err.code || 'unknown'}`);
-        console.error(`[CONVERT] stderr: ${err.stderr || err.message}`);
-        
-        // Clean up strictly any orphaned file exactly matching the output ID
-        const files = fs.readdirSync(tmpDir);
-        for (const file of files) {
-            if (file.startsWith(videoId)) {
-                try {
-                    fs.unlinkSync(path.join(tmpDir, file));
-                } catch(e) {}
-            }
+    ytdlp.on('error', (err) => {
+        console.error(`[CONVERT] Spawn failed: ${err.message}`);
+        if (!res.headersSent) {
+            res.status(500).json({ error: 'Failed to spawn conversion process' });
         }
-        
-        return res.status(500).json({ 
-            error: 'Failed to convert video to MP3.',
-            details: String(err.stderr || err.message).trim().substring(0, 500)
-        });
-    }
+    });
 });
 
 app.post('/api/spotify/playlist', async (req, res) => {
